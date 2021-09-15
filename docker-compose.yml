@@ -1,0 +1,109 @@
+version: '3.5'
+services:
+  barsky-scrapper-flask: &barsky-scrapper
+    command: local-web
+    restart: always
+    image: barsky-scrapper-flask
+    build:
+      context: .
+    ports:
+      - 5001:5000
+    volumes:
+      - ./bucket:/usr/src/app/bucket
+    environment:
+      CELERY_BROKER_URL: amqp://rabbitmq:rabbitmq@barsky-scrapper-rabbit:5672/
+      USE_S3: "False"
+      BUCKET_NAME: bucket
+      ENDPOINT_URL: https://s3.us-south.objectstorage.softlayer.net
+      WEB_DATABASE_URL: postgresql://root:root@postgres:5432/barsky-scrapper
+      MEMCACHED_SERVERS: memcached
+      MEMCACHED_USERNAME: admin
+      MEMCACHED_PASSWORD: admin
+      API_DEALER_RATER: https://www.dealerrater.com/dealer
+      DEALER_RATER_BUICK: McKaig-Chevrolet-Buick-A-Dealer-For-The-People-dealer-reviews-23685
+    links:
+      - postgres
+    depends_on:
+      - postgres
+    networks:
+      barsky-scrapper-network:
+        aliases:
+          - barsky-scrapper-flask
+    depends_on:
+      - postgres
+      - redis
+      - barsky-scrapper-rabbit
+
+  barsky-scrapper-celery:
+    <<: *barsky-scrapper
+    command: local-worker
+    ports:
+      - 5002:5000
+    environment:
+      MODE: WORKER
+    networks:
+      barsky-scrapper-network:
+        aliases:
+          - barsky-scrapper-celery
+
+  postgres:
+    container_name: postgres
+    image: postgres:11.2-alpine
+    hostname: postgres
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: barsky-scrapper, barsky-scrapper-integration, barsky-scrapper-migration
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    ports:
+      - "15433:5432"
+    networks:
+      barsky-scrapper-network:
+        aliases:
+          - postgres
+    volumes:
+      - ./extras/postgres/scripts:/docker-entrypoint-initdb.d
+      - ./extras/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+
+  memcached:
+    container_name: memcached
+    image: memcached:alpine
+    hostname: memcached
+    ports:
+      - "11211:11211"
+    networks:
+      barsky-scrapper-network:
+        aliases:
+          - memcached
+
+  barsky-scrapper-rabbit:
+    image: "rabbitmq:3-management"
+    hostname: "barsky-scrapper-rabbit"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "ALSDJGSODISETRA"
+      RABBITMQ_DEFAULT_USER: "rabbitmq"
+      RABBITMQ_DEFAULT_PASS: "rabbitmq"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      barsky-scrapper-network:
+        aliases:
+          - barsky-scrapper-rabbit
+
+  redis:
+    container_name: redis
+    hostname: redis
+    image: redis
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      barsky-scrapper-network:
+        aliases:
+          - redis
+
+networks:
+  barsky-scrapper-network:
+    name: barsky-scrapper-network
+    driver: bridge
