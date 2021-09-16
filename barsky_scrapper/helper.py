@@ -96,6 +96,12 @@ def get_s3_conf(config):
             if k.lower().startswith('s3_')}
 
 
+def remove_escapes(s):
+    escapes = ''.join([chr(char) for char in range(1, 32)])
+    translator = str.maketrans('', '', escapes)
+    return str(s).translate(translator)
+
+
 def get_bucket():
     try:
         # Used on flask context
