@@ -2,6 +2,41 @@ from datetime import datetime
 from unittest import skip
 
 
+class ReviewsMostSuspiciousAPISpec:
+
+    def when_retrieve_the_suspicious(self):
+        raise NotImplementedError()
+
+    def assert_response_reviews_count(self, field, count, index=0):
+        raise NotImplementedError()
+
+    def assert_return_is(self, expected_type):
+        raise NotImplementedError()
+
+    def assert_response_reviews_has(self, field):
+        raise NotImplementedError()
+
+    def assert_ok(self):
+        raise NotImplementedError()
+
+    def test_01_route_is_available(self):
+        self.when_retrieve_the_suspicious()
+        self.assert_ok()
+
+    def test_02_return_a_list(self):
+        self.when_retrieve_the_suspicious()
+        self.assert_ok()
+        self.assert_return_is(dict)
+    
+    def test_03_has_not_empty_reviews(self):
+        self.when_retrieve_the_suspicious()
+        self.assert_response_reviews_has('reviews')
+    
+    def test_04_reviews_count_is_three(self):
+        self.when_retrieve_the_suspicious()
+        self.assert_response_reviews_count(field='reviews', count=3)
+
+
 class ReviewDealerRaterAPISpec:
 
     def given_pages_to_be_scraped(self, num):

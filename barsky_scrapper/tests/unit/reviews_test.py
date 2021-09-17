@@ -5,7 +5,7 @@ from barsky_scrapper.tests.mixins import (
     JsonMixin, FlaskMixin, BucketMixin, CacheMixin,
     DateTimeMixin, DealerRaterServiceMixin)
 
-from barsky_scrapper.tests.reviews_spec import ReviewDealerRaterAPISpec
+from barsky_scrapper.tests.reviews_spec import ReviewDealerRaterAPISpec, ReviewsMostSuspiciousAPISpec
 
 from barsky_scrapper.api import api
 from barsky_scrapper.cache import cache
@@ -13,7 +13,7 @@ from barsky_scrapper.cache import cache
 
 class ReviewDealerRaterTest(
         FlaskMixin, JsonMixin, CacheMixin, BucketMixin, DateTimeMixin,
-        DealerRaterServiceMixin, ReviewDealerRaterAPISpec, TestCase):
+        DealerRaterServiceMixin, ReviewsMostSuspiciousAPISpec, ReviewDealerRaterAPISpec, TestCase):
 
     API_VERSION = '/v1'
 
@@ -81,6 +81,19 @@ class ReviewDealerRaterTest(
         self.response = self.client.get(
             f'/v1/reviews/buick/{self._page}', headers=self.headers)
 
+    def when_retrieve_the_suspicious(self):
+        self.response = self.client.get(
+            f'/v1/reviews/buick/suspicious', headers=self.headers)
+
     def assert_dealerrater_workflow_get_called(self):
         self.assertTrue(self.dealerrater_workflow.called)
+
+    def assert_return_is(self, expected_type):
+        self.assertEqual(type(self.response.json), expected_type)
+
+    def assert_response_reviews_has(self, field):
+        self.assertIn(field, self.response.json)
+
+    def assert_response_reviews_count(self, field, count):
+        self.assertEqual(len(self.response.json[field]), count)
 
