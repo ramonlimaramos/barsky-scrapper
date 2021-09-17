@@ -17,12 +17,13 @@ from barsky_scrapper.domain import AdapterBuickReview
 @ns.route('/buick/<maxpages>')
 class DealerRaterBuickController(Resource):
 
-    @ns.doc('Get all reviews from the dealerrater.com for McKaig Chevrolet Buick')
-    @ns.response(200, 'Successful executed', model=dealer_rater_response)
 
     # TODO: workflow with celery aim capability of parallelism
     # @ns.response(202, 'Accecpted and triggered', model=in_progress_response)
     # @ns.response(304, 'Scrapping is processing', model=in_progress_response)
+
+    @ns.doc('Get all reviews from the dealerrater.com for McKaig Chevrolet Buick')
+    @ns.response(200, 'Successful executed', model=dealer_rater_response)
     def get(self, maxpages):
         maxpages = int(maxpages) if int(maxpages) > 0 else 1
         dealer_rater_service = DealerRaterService()
@@ -49,8 +50,6 @@ class DealerRaterBuickController(Resource):
 @ns.route('/buick/suspicious')
 class DealerRaterBuickController(Resource):
 
-    @ns.doc('Get top 3 reviews suspicious from the dealerrater.com for McKaig Chevrolet Buick')
-    @ns.response(200, 'Successful executed', model=dealer_rater_suspicious_response)
     # TODO: workflow with celery aim capability of parallelism
     # @ns.response(202, 'Accecpted and triggered', model=in_progress_response)
     # @ns.response(304, 'Scrapping is processing', model=in_progress_response)

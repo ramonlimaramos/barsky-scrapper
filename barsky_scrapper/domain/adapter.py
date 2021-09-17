@@ -32,7 +32,6 @@ class TemplateAdapter:
         pass
 
 
-
 class BuilderBuick(TemplateBuilder):
 
     @classmethod
