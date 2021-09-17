@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 from abc import ABCMeta, abstractclassmethod, abstractmethod
 
+from barsky_scrapper.domain import Review, Employee, Ratings, ScoreAnalyzer
 from barsky_scrapper.helper import remove_escapes, bubble_sort
 
 
@@ -37,16 +38,20 @@ class BuilderBuick(TemplateBuilder):
     @classmethod
     def build(cls, soup):
         elements = soup.find_all('div', class_='review-entry')
-        return [{
-            'title': cls._get_title(x),
-            'text': cls._get_text(x),
-            'date': cls._get_date(x),
-            'user': cls._get_user(x),
-            'fakeLevelLabel': ScoreAnalyzer(cls._get_text(x)).label,
-            'fakeLevelValue':ScoreAnalyzer(cls._get_text(x)).value,
-            'ratings': cls._get_ratings(x),
-            'employees': cls._get_employees(x),
-        } for x in elements]
+
+        return [dict(
+            Review(
+                title=cls._get_title(x),
+                text=cls._get_text(x),
+                date=cls._get_date(x),
+                user=cls._get_user(x),
+                fake_level_label=ScoreAnalyzer(
+                    cls._get_text(x), cls._get_ratings(x)).label,
+                fake_level_value=ScoreAnalyzer(
+                    cls._get_text(x), cls._get_ratings(x)).value,
+                ratings=cls._get_ratings(x),
+                employees=cls._get_employees(x),
+            )) for x in elements]
 
     @classmethod
     def _get_title(cls, html, **kwargs):
