@@ -1,6 +1,30 @@
+from barsky_scrapper.services import DealerRaterService
+from barsky_scrapper.domain import AdapterBuickReview
+from pprint import pprint
+
 
 def suspicious(model):
-    print('the list of suspicious ' + model)
+    dealer_rater_service = DealerRaterService()
+
+    for x in range (0,5):  
+        b = "Loading" + "." * x
+        print (b, end="\r")
+
+    reviews = AdapterBuickReview(service=dealer_rater_service)
+    suspicious = reviews.most_suspicious
+
+    for item in suspicious['reviews']:
+        print('Title:', item['title'])
+        print('User:', item['user'])
+        print('Date:', item['date'])
+        print('Class:', item['fakeLevelLabel'])
+        print('Score:', item['fakeLevelValue'])
+        print('Ratings:')
+        pprint(item['ratings'])
+        print('Employees:')
+        pprint(item['employees'])
+        print(item['text'])
+        print('\n')
 
 
 def parse_arguments():

@@ -47,9 +47,10 @@ def get_config():
         web_database_url=env.get('WEB_DATABASE_URL', 'sqlite:////tmp/dev.db'),
         worker_database_url=env.get(
             'WORKER_DATABASE_URL', 'sqlite:////tmp/dev.db'),
-        api_dealer_rater=env.get('API_DEALER_RATER', 'http://localhost:5002'),
+        api_dealer_rater=env.get(
+            'API_DEALER_RATER', 'https://www.dealerrater.com/dealer'),
         dealer_rater_buick=env.get(
-            'DEALER_RATER_BUICK', 'http://localhost:5003'),
+            'DEALER_RATER_BUICK', 'McKaig-Chevrolet-Buick-A-Dealer-For-The-People-dealer-reviews-23685'),
         use_s3=True if env.get('USE_S3', 'false').lower() == 'true' else False,
         cache_type='simple',
         cache_memcached_servers=cache_memcached_servers,
@@ -114,3 +115,17 @@ def get_bucket():
         return S3FS(**get_s3_conf(config))
     else:
         return open_fs(abspath(join(here, '..',  'bucket')))
+
+
+def bubble_sort(array):
+
+    for mx in range(len(array)-1, -1, -1):
+        swapped = False
+        for i in range(mx):
+            if array[i][1] < array[i+1][1]:
+                array[i], array[i+1] = array[i+1], array[i]
+                swapped = True
+        if not swapped:
+            break
+
+    return array

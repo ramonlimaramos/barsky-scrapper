@@ -54,12 +54,14 @@ class DealerRaterBuickController(Resource):
     # TODO: workflow with celery aim capability of parallelism
     # @ns.response(202, 'Accecpted and triggered', model=in_progress_response)
     # @ns.response(304, 'Scrapping is processing', model=in_progress_response)
-    def get(self, maxpages):
-        maxpages = int(maxpages) if int(maxpages) > 0 else 1
-        dealer_rater_service = DealerRaterService()
-        reviews = AdapterBuickReview(service=dealer_rater_service, total=int(maxpages))
 
-        return reviews.all, 200
+    @ns.doc('Get top 3 reviews suspicious from the dealerrater.com for McKaig Chevrolet Buick')
+    @ns.response(200, 'Successful executed', model=dealer_rater_suspicious_response)
+    def get(self):
+        dealer_rater_service = DealerRaterService()
+        reviews = AdapterBuickReview(service=dealer_rater_service)
+
+        return reviews.most_suspicious, 200
 
         # TODO: workflow with celery aim capability of parallelism
         # reference = datetime.now().strftime('%Y-%m-%d')

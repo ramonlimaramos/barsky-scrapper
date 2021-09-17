@@ -4,8 +4,7 @@ from bs4 import BeautifulSoup
 
 from abc import ABCMeta, abstractclassmethod, abstractmethod
 
-from barsky_scrapper.domain import Employee, Ratings, ScoreAnalyzer
-from barsky_scrapper.helper import remove_escapes
+from barsky_scrapper.helper import remove_escapes, bubble_sort
 
 
 __all__ = ['BuilderBuick', 'AdapterBuickReview']
@@ -161,3 +160,10 @@ class AdapterBuickReview(TemplateAdapter):
     @property
     def all(self):
         return self._list_review
+
+    @property
+    def most_suspicious(self):
+        flat = [review for items in self._list_review for review in items['reviews']]
+        to_sort = [(items, items['fakeLevelValue']) for items in flat]
+        most_suspicious = [item[0] for item in bubble_sort(to_sort)]
+        return {'reviews': most_suspicious[:3]}
