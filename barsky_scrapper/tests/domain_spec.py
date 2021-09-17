@@ -2,6 +2,12 @@
 
 class AnalyzerSpec:
 
+    def given_ratings_is(self, **kwargs):
+        raise NotImplementedError()
+    
+    def given_no_ratings(self):
+        raise NotImplementedError()
+
     def given_text_is(self, text):
         raise NotImplementedError()
 
@@ -12,9 +18,38 @@ class AnalyzerSpec:
         raise NotImplementedError()
     
     def test_01_analyzer_empty(self):
+        self.given_no_ratings()
         self.given_text_is('')
         self.when_executes_buick_score()
         self.assert_score_value(0)
+    
+    def test_02_analyzer_score_to_10(self):
+        self.given_no_ratings()
+        self.given_text_is("""
+        McKaig Chevrolet gave us a pleasant buying experience. 
+        Such friendly, knowledgeable staff that were a pleasure to work with
+        """)
+        self.when_executes_buick_score()
+        self.assert_score_value(10)
+    
+    def test_03_analyzer_score_to_180(self):
+        self.given_no_ratings()
+        self.given_text_is("""
+        Honestly the best dealership I’ve been to honestly wouldn’t go back to 
+        Kia after going to Mckaig Chevrolet. Really nice guys helping get us to 
+        where we needed to be and into the ride we came there for!! Highly recommend!!
+        """)
+        self.when_executes_buick_score()
+        self.assert_score_value(180)
+    
+    def test_04_analyzer_score_to_180(self):
+        self.given_no_ratings()
+        self.given_text_is("""
+        Honestly the best cool, nice, helped, great job, superb
+        excepecional and fantastic they are amazing and happy the whole best experience
+        """)
+        self.when_executes_buick_score()
+        self.assert_score_value(540)
 
 
 class AdapterBuilderSpec:
@@ -40,10 +75,13 @@ class AdapterBuilderSpec:
         </div>
         """)
         self.when_executes_buick_builder()
+
+        uuid = self._response.all[0]['reviews'][0]['uuid']
         self.assert_transformed_to(
             [{
                 'page': 1,
                 'reviews': [{
+                    'uuid': uuid,
                     'date': '',
                     'employees': [],
                     'fakeLevelLabel': '',
@@ -70,10 +108,13 @@ class AdapterBuilderSpec:
         </div>
         """)
         self.when_executes_buick_builder()
+
+        uuid = self._response.all[0]['reviews'][0]['uuid']
         self.assert_transformed_to(
             [{
                 'page': 1,
                 'reviews': [{
+                    'uuid': uuid,
                     'date': 'September 15, 2021',
                     'employees': [],
                     'fakeLevelLabel': '',
@@ -99,10 +140,13 @@ class AdapterBuilderSpec:
         </div>
         """)
         self.when_executes_buick_builder()
+
+        uuid = self._response.all[0]['reviews'][0]['uuid']
         self.assert_transformed_to(
             [{
                 'page': 1,
                 'reviews': [{
+                    'uuid': uuid,
                     'date': '',
                     'employees': [],
                     'fakeLevelLabel': '',
@@ -127,10 +171,13 @@ class AdapterBuilderSpec:
         </div>
         """)
         self.when_executes_buick_builder()
+
+        uuid = self._response.all[0]['reviews'][0]['uuid']
         self.assert_transformed_to(
             [{
                 'page': 1,
                 'reviews': [{
+                    'uuid': uuid,
                     'date': '',
                     'employees': [],
                     'fakeLevelLabel': '',
@@ -190,10 +237,13 @@ class AdapterBuilderSpec:
         </div>
         """)
         self.when_executes_buick_builder()
+
+        uuid = self._response.all[0]['reviews'][0]['uuid']
         self.assert_transformed_to(
             [{
                 'page': 1,
                 'reviews': [{
+                    'uuid': uuid,
                     'date': '',
                     'employees': [
                         {'name': 'Taylor Prickett', 'rating': 5.0 }, 
@@ -260,14 +310,17 @@ class AdapterBuilderSpec:
         </div>
         """)
         self.when_executes_buick_builder()
+
+        uuid = self._response.all[0]['reviews'][0]['uuid']
         self.assert_transformed_to(
             [{
                 'page': 1,
                 'reviews': [{
+                    'uuid': uuid,
                     'date': '',
                     'employees': [],
-                    'fakeLevelLabel': '',
-                    'fakeLevelValue': 0,
+                    'fakeLevelLabel': 'Neutral',
+                    'fakeLevelValue': 250.0,
                     'ratings': {
                         'dealRating': 50.0,
                         'customerService': 50.0,

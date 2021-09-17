@@ -8,15 +8,19 @@ class AnalyzerTest(AnalyzerSpec, TestCase):
 
     def setUp(self):
         super(AnalyzerTest, self).setUp()
+        self._ratings_sum = {}
 
     def tearDown(self):
         super(AnalyzerTest, self).tearDown()
+
+    def given_no_ratings(self):
+        self._ratings_sum = {}
 
     def given_text_is(self, text):
         self._text = text
 
     def when_executes_buick_score(self):
-        self._response_count = ScoreAnalyzer(self._text)
+        self._response_count = ScoreAnalyzer(self._text, self._ratings_sum)
 
     def assert_score_value(self, count):
         self.assertEqual(count, self._response_count.value)
