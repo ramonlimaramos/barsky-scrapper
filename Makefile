@@ -50,7 +50,7 @@ suspicious:
 run: build
 	${VIRTUALENV} FLASK_ENV=development FLASK_APP=barsky_scrapper.main flask run
 
-container: build
+container:
 	docker-compose up -d postgres memcached barsky-scrapper-rabbit redis
 	docker-compose up --build --exit-code-from barsky-scrapper-flask barsky-scrapper-flask barsky-scrapper-celery barsky-scrapper-celery
 
