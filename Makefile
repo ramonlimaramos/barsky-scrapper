@@ -66,32 +66,14 @@ test: build ${REQUIREMENTS_TEST}
 pdb: build ${REQUIREMENTS_TEST}
 	${VIRTUALENV} CI=1 py.test ${PYTHON_MODULES} -x --ff --pdb --ignore ${PYTHON_MODULES}/tests/integration
 
-ci:
-ifeq "true" "${TRAVIS}"
-	CI=1 py.test ${PYTHON_MODULES} --durations=10 --cov=${PYTHON_MODULES} ${PYTHON_MODULES}/tests/ --cov-config .coveragerc --cov-report=xml --junitxml=pytest-report.xml
-else
-	${VIRTUALENV} CI=1 py.test ${PYTHON_MODULES} --durations=10 --cov=${PYTHON_MODULES} ${PYTHON_MODULES}/tests/ --cov-config .coveragerc --cov-report=xml --junitxml=pytest-report.xml
-endif
-
 coverage: build ${REQUIREMENTS_TEST}
 	${VIRTUALENV} CI=1 py.test ${PYTHON_MODULES} --cov=${PYTHON_MODULES} ${PYTHON_MODULES}/tests/ --cov-config .coveragerc --cov-report term-missing --cov-report html:cov_html --cov-report xml:cov.xml --cov-report annotate:cov_annotate
 
 codestyle: ${REQUIREMENTS_TEST}
 	${VIRTUALENV} pycodestyle --statistics -qq ${PYTHON_MODULES} | sort -rn || echo ''
 
-todo: ${REQUIREMENTS_TEST}
-	${VIRTUALENV} python3 -m flake8 ${PYTHON_MODULES}
-	${VIRTUALENV} python3 -m pycodestyle --first ${PYTHON_MODULES}
-	find ${PYTHON_MODULES} -type f | xargs -I [] grep -H TODO []
-
-search:
-	find ${PYTHON_MODULES} -regex .*\.py$ | xargs -I [] egrep -H -n 'print|ipdb' [] || echo ''
-
 report:
 	coverage run --source=${PYTHON_MODULES} setup.py test
-
-tdd: ${REQUIREMENTS_TEST}
-	${VIRTUALENV} python3 -m ptw --ignore ${VIRTUALENV_DIR} --ignore ${PYTHON_MODULES}/tests/integration/
 
 tox: ${REQUIREMENTS_TEST}
 	${VIRTUALENV} python3 -m tox
@@ -117,12 +99,5 @@ docs_ci: docs/plantuml.jar
 	${MAKE} -C docs html
 
 dist: python_egg python_wheel
-
-deploy: ${REQUIREMENTS_TEST} dist
-ifeq "true" "${TRAVIS}"
-	twine upload dist/*.whl
-else
-	${VIRTUALENV} twine upload dist/*.whl -r local
-endif
 
 .PHONY: clean purge dist docs create_db
