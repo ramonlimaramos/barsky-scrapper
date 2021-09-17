@@ -54,7 +54,7 @@ nbproject/
 # Ignore pycache files
 
 .pytest_cache
-
+__pycache__/
 static/temp
 !static/temp/.keep
 
@@ -84,3 +84,7 @@ docs/*.zip
 # Docker Compose Data
 
 extras/*/data/
+
+# Fast-text
+
+tools/

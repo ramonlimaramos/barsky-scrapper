@@ -42,7 +42,7 @@ help: build
 	${VIRTUALENV} python ${PYTHON_MODULES}/cli.py -h
 
 local_suspicious: build
-	${VIRTUALENV} python ${PYTHON_MODULES}/cli.py --model $(model)
+	${VIRTUALENV} python ${PYTHON_MODULES}/cli.py --model buick
 
 suspicious:
 	docker-compose up --build --exit-code-from barsky-scrapper-cli barsky-scrapper-cli
@@ -50,18 +50,21 @@ suspicious:
 run: build
 	${VIRTUALENV} FLASK_ENV=development FLASK_APP=barsky_scrapper.main flask run
 
-container:
+api:
 	docker-compose up -d postgres memcached barsky-scrapper-rabbit redis
 	docker-compose up --build --exit-code-from barsky-scrapper-flask barsky-scrapper-flask barsky-scrapper-celery barsky-scrapper-celery
 
-api: build
+test:
+	docker-compose -f ./docker-compose.test.yml up --build --exit-code-from barsky-scrapper-test barsky-scrapper-test
+
+local_api: build
 	${VIRTUALENV} python -m gunicorn -w 1 -b 0.0.0.0:5000 barsky_scrapper.main:app --log-level=-debug --reload
 
-worker: build
+local_worker: build
 	${VIRTUALENV} MODE=WORKER watchmedo auto-restart -d barsky_scrapper -p '*.py' --recursive -- celery -A barsky_scrapper.services.background.main worker -l INFO --no-execv
 
-test: build ${REQUIREMENTS_TEST}
-	${VIRTUALENV} py.test ${PYTHON_MODULES}
+local_test: build ${REQUIREMENTS_TEST}
+	${VIRTUALENV} py.test ${PYTHON_MODULES} --ignore ${PYTHON_MODULES}/tests/integration
 
 pdb: build ${REQUIREMENTS_TEST}
 	${VIRTUALENV} CI=1 py.test ${PYTHON_MODULES} -x --ff --pdb --ignore ${PYTHON_MODULES}/tests/integration

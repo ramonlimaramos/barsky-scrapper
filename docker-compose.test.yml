@@ -1,0 +1,37 @@
+version: '3.5'
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:11-alpine
+    hostname: postgres
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: barsky-scrapper, barsky-scrapper-integration, barsky-scrapper-migration
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+    networks:
+      test-integration-network:
+        aliases:
+          - postgres
+    volumes:
+      - ./extras/postgres/scripts:/docker-entrypoint-initdb.d
+      - ./extras/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+
+  barsky-scrapper-test: &baseConfig
+    image: barsky-scrapper-test
+    environment:
+      POSTGRES_INTEGRATION: "postgresql://root:root@postgres:5432/da-risky-words-integration"
+      POSTGRES_MIGRATION: "postgresql://root:root@postgres:5432/da-risky-words-migration"
+      POSTGRES_INTEGRATION_MIGRATION: "postgresql://root:root@postgres:5432/da-risky-words-integration-migration"
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    command: test
+    depends_on:
+      - postgres
+    networks:
+      - test-integration-network
+
+networks:
+  test-integration-network:
+    name: test-integration-network
+    driver: bridge

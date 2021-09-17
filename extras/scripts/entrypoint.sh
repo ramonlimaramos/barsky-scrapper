@@ -2,6 +2,10 @@
 set -e
 
 case $1 in
+test)
+  echo "TEST MODE"
+  py.test barsky_scrapper --ignore barsky_scrapper/tests/integration
+  ;;
 local-cli)
   python barsky_scrapper/cli.py --model buick
   ;;
