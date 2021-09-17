@@ -2,6 +2,9 @@
 set -e
 
 case $1 in
+local-cli)
+  python barsky_scrapper/cli.py --model buick
+  ;;
 local-web)
   echo "Local Web with watchmedo"
   alembic upgrade head

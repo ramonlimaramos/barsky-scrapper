@@ -34,6 +34,14 @@ services:
       - redis
       - barsky-scrapper-rabbit
 
+  barsky-scrapper-cli:
+    <<: *barsky-scrapper
+    command: local-cli
+    networks:
+      barsky-scrapper-network:
+        aliases:
+          - barsky-scrapper-cli
+
   barsky-scrapper-celery:
     <<: *barsky-scrapper
     command: local-worker

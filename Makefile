@@ -41,8 +41,11 @@ build: python_build ${CHECKPOINT_DIR}/.python_develop
 help: build
 	${VIRTUALENV} python ${PYTHON_MODULES}/cli.py -h
 
-suspicious: build
+local_suspicious: build
 	${VIRTUALENV} python ${PYTHON_MODULES}/cli.py --model $(model)
+
+suspicious:
+	docker-compose up --build --exit-code-from barsky-scrapper-cli barsky-scrapper-cli
 
 run: build
 	${VIRTUALENV} FLASK_ENV=development FLASK_APP=barsky_scrapper.main flask run
