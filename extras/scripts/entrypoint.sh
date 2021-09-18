@@ -4,6 +4,7 @@ set -e
 case $1 in
 test)
   echo "TEST MODE"
+  make clean
   py.test barsky_scrapper --ignore barsky_scrapper/tests/integration
   ;;
 local-cli)
