@@ -142,6 +142,10 @@ Ramon Ramos
     * CLI Implementation
     * API Implementation
 
-## License
+## Note
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+- Addicional Comments:<br/>
+    * There are parts in the code where has commented as "TODOS", I'm planning to create a workflow to scrapes the pages in parallelism by background tasking using RABBITMQ as queueing and REDIS as backend result all of them managed by CELERY framework.<br/>
+    This will enhance the performance in scrapping and it will avoid the timeout synchronous as is implemented right now.
+
+    * Also it is necessary includes an debouncing logic over the API requisitions
